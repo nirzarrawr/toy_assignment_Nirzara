@@ -1,0 +1,192 @@
+#importing modules from python library
+from machine import Pin
+import time,neopixel,random
+
+#assigning variables and pins to each led
+#indicates the move played by the user
+LED1=Pin(15,Pin.OUT)
+LED2=Pin(21,Pin.OUT)
+LED3=Pin(12,Pin.OUT)
+#indicates the move played by the computer
+LED4=Pin(19,Pin.OUT)
+LED5=Pin(22,Pin.OUT)
+LED6=Pin(26,Pin.OUT)
+
+#assigning variables and pins to each push button
+pb1=Pin(4,Pin.IN,Pin.PULL_UP)
+pb2=Pin(33,Pin.IN,Pin.PULL_UP)
+pb3=Pin(25,Pin.IN,Pin.PULL_UP)
+
+#assiging variable and pin to the neopixel
+neo=neopixel.NeoPixel(Pin(14),16)
+
+#assigning variable and pin to buzzer
+buzz=Pin(18,Pin.OUT)
+
+#list with all the moves and LED names which corresponds to the computer's moves
+move=["stone","paper","scissors"]
+leds_comp=[LED4,LED5,LED6]
+
+
+    
+#difining a function which calculates who won (x is user and y is computer) then lights the neopixel and buzzer accordingingly 
+def calculate(x,y):
+    #if the user wins 
+    if (x=="stone" and y=="scissors") or (x=="paper" and y=="stone") or (x=="scissors" and y=="paper"):
+        print("You WIN!!!!!")
+        #buzzer sound and neopixel light up two times
+        for i in range(2):
+            #the neopixel lights up
+            for j in range(16):
+                neo[j]=(0,150,100)
+                neo.write()
+            time.sleep(0.2)
+            #the buzzer makes a melodious sound
+            buzz.value(1)
+            time.sleep(0.2)
+            buzz.value(0)
+            time.sleep(0.05)
+            buzz.value(1)
+            time.sleep(0.2)
+            buzz.value(0)
+            time.sleep(0.05)
+            buzz.value(1)
+            time.sleep(0.2)
+            buzz.value(0)
+            time.sleep(0.05)
+            buzz.value(1)
+            time.sleep(0.4)
+            buzz.value(0)
+            time.sleep(0.05)
+            buzz.value(1)
+            time.sleep(0.2)
+            buzz.value(0)
+            time.sleep(0.5)
+            buzz.value(0)
+            #the neopixel turns off up
+            for j in range(16):
+                neo[j]=(0,0,0)
+                neo.write()
+            time.sleep(0.2)
+    
+    #if the computer wins
+    elif (x=="stone" and y=="paper") or (x=="paper" and y=="scissors") or (x=="scissors" and y=="stone"):
+        print("Computer WINS!!!!!")
+        #the buzzer makes two beeps
+        for n in range(2):
+            buzz.value(1)
+            time.sleep(0.2)
+            buzz.value(0)
+            time.sleep(0.2)
+        #the neopixel blinks red 4 times
+        for i in range(4):
+            for j in range(16):
+                neo[j]=(255,0,0)
+                neo.write()
+            time.sleep(0.2)
+            for j in range(16):
+                neo[j]=(0,0,0)
+                neo.write()
+            time.sleep(0.2)
+    
+    #if its a tie
+    elif x==y:
+        print("You TIED!")
+        #the buzzer makes two beeps
+        for n in range(2):
+            buzz.value(1)
+            time.sleep(0.2)
+            buzz.value(0)
+        #the neopixel blinks orange 4 times
+        for i in range(4):
+            for j in range(16):
+                neo[j]=(255,100,0)
+                neo.write()
+            time.sleep(0.2)
+            for j in range(16):
+                neo[j]=(0,0,0)
+                neo.write()
+            time.sleep(0.2)
+        
+#defining the function for timer with a buzzer which mimics the stone,paper scissors sound
+def timer():
+    #the user has time to choose (but they have to hold down on the button for it to work)
+    buzz.value(1)
+    time.sleep(0.5)
+    buzz.value(0)
+    print("stone")
+    time.sleep(0.2)
+    buzz.value(1)
+    time.sleep(0.25)
+    buzz.value(0)
+    time.sleep(0.05)
+    buzz.value(1)
+    time.sleep(0.25)
+    buzz.value(0)
+    print("paper")
+    time.sleep(0.2)
+    buzz.value(1)
+    time.sleep(0.1)
+    buzz.value(0)
+    time.sleep(0.05)
+    buzz.value(1)
+    time.sleep(0.3)
+    print("scissors")
+    buzz.value(0)
+    print("GO!!!!!")
+    
+#while loop so we dont have to run the code each time
+while True:
+    #to initialize the game
+    if pb1.value()==0 or pb2.value()==0 or pb3.value()==0:
+        #calling the function to start the timer
+        timer()
+        
+        #based on the button pushed the results are calculated, buzzer makes a sound and neopixel lights up
+        if pb1.value()==0:
+            #user is assigned a move based on the button they pushed
+            user="stone"
+            #random number is generated so computer can make the move accordingly 
+            r=random.randint(0,2)
+            comp=move[r]
+            #leds turn on and off
+            leds_comp[r].value(1)
+            LED1.value(1)
+            time.sleep(0.5)
+            LED1.value(0)
+            leds_comp[r].value(0)
+            time.sleep(0.5)
+            #results are calculated by calling the function
+            calculate(user,comp)
+
+        elif pb2.value()==0:
+            #user is assigned a move based on the button they pushed
+            user="paper"
+            #random number is generated so computer can make the move accordingly
+            r=random.randint(0,2)
+            comp=move[r]
+            #leds turn on and off
+            leds_comp[r].value(1)
+            LED2.value(1)
+            time.sleep(0.5)
+            LED2.value(0)
+            leds_comp[r].value(0)
+            time.sleep(0.5)
+            #results are calculated by calling the function
+            calculate(user,comp)
+            
+        elif pb3.value()==0:
+            #user is assigned a move based on the button they pushed
+            user="scissors"
+            #random number is generated so computer can make the move accordingly
+            r=random.randint(0,2)
+            comp=move[r]
+            #leds turn on and off
+            LED3.value(1)
+            leds_comp[r].value(1)
+            time.sleep(0.5)
+            LED3.value(0)
+            leds_comp[r].value(0)
+            time.sleep(0.5)
+            #results are calculated by calling the function
+            calculate(user,comp)
